@@ -83,23 +83,33 @@
 //! assert_eq!(num_primes, 1_229);
 //! ```
 
+#![cfg_attr(feature = "nightly", no_std)]
+#![cfg_attr(feature = "nightly", feature(collections))]
+
 #![cfg_attr(all(test, feature = "nightly"), feature(test))]
 #[cfg(all(test, feature = "nightly"))] extern crate test;
 #[cfg(all(test, feature = "nightly"))] extern crate rand;
 
-use std::cmp::Ordering;
-use std::cmp;
-use std::fmt;
-use std::hash;
-use std::iter::{Chain, Enumerate, Repeat, Skip, Take, repeat};
-use std::iter::FromIterator;
-use std::slice;
-use std::{u8, usize};
+#[cfg(not(feature = "nightly"))] extern crate core;
+
+#[cfg(feature = "nightly")]
+#[macro_use]
+extern crate collections;
+
+#[cfg(feature = "nightly")]
+use collections::Vec;
+
+use core::cmp::Ordering;
+use core::cmp;
+use core::fmt;
+use core::hash;
+use core::iter::{FromIterator, repeat};
+use core::slice;
+use core::{u8, usize};
 
 type MutBlocks<'a, B> = slice::IterMut<'a, B>;
-type MatchWords<'a, B> = Chain<Enumerate<Blocks<'a, B>>, Skip<Take<Enumerate<Repeat<B>>>>>;
 
-use std::ops::*;
+use core::ops::*;
 
 /// Abstracts over a pile of bits (basically unsigned primitives)
 pub trait BitBlock:
@@ -154,7 +164,7 @@ bit_block_impl!{
     (u16, 16),
     (u32, 32),
     (u64, 64),
-    (usize, std::mem::size_of::<usize>() * 8)
+    (usize, core::mem::size_of::<usize>() * 8)
 }
 
 
